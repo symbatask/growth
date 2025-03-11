@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     'Nextjs, Server comonents, Zustand, Next auth, daisyui',
 }
 
+
+
 export default async function Home() {
   // const featuredProducts = await productService.getFeatured()
   const latestProducts = await productService.getLatest()

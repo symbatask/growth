@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { round2 } from '../utils'
-import { OrderItem } from '../OrderModel'
+import { OrderItem as OrderItem, ShippingAddress as ShippingAddress } from '../OrderModel'
 import { persist } from 'zustand/middleware'
+
 
 type Cart = {
   items: OrderItem[]
@@ -9,6 +10,8 @@ type Cart = {
   taxPrice: number
   shippingPrice: number
   totalPrice: number
+  paymentMethod: string
+  shippingAddress: ShippingAddress
 }
 
 const initialState: Cart = {
@@ -17,22 +20,32 @@ const initialState: Cart = {
   taxPrice: 0,
   shippingPrice: 0,
   totalPrice: 0,
+  paymentMethod: 'PayPal',
+  shippingAddress: {
+    fullName: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    country: '',
+  },
 }
 
 export const cartStore = create<Cart>()(
   persist(() => initialState, {
-    name: "cartStore"
+    name: 'cartStore',
   })
 )
 
 export default function useCartService() {
-  const { items, itemsPrice, taxPrice, shippingPrice, totalPrice } = cartStore()
+  const { items, itemsPrice, taxPrice, shippingPrice, totalPrice , paymentMethod,shippingAddress } = cartStore()
   return {
     items,
     itemsPrice,
     taxPrice,
     shippingPrice,
     totalPrice,
+    paymentMethod,
+    shippingAddress,
     increase: (item: OrderItem) => {
       const exist = items.find((x) => x.slug === item.slug)
       const updatedCartItems = exist
@@ -67,6 +80,30 @@ export default function useCartService() {
         taxPrice,
       })
     },
+    saveShippingAddress: (shippingAddress: ShippingAddress) => {
+      cartStore.setState({shippingAddress})
+    },
+    savePaymentMethod: (paymentMethod: string) => {
+     cartStore.setState({paymentMethod})
+    },
+    clear: () => {
+      cartStore.setState({
+        items: [],
+        itemsPrice: 0,
+        taxPrice: 0,
+        shippingPrice: 0,
+        totalPrice: 0,
+        paymentMethod: 'PayPal',
+        shippingAddress: {
+          fullName: '',
+          address: '',
+          city: '',
+          postalCode: '',
+          country: ''
+        }
+      })
+    },
+    init: () => cartStore.setState(initialState),
   }
 }
 

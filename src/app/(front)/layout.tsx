@@ -7,3 +7,5 @@ export default function FrontLayout({
 }) {
   return <main className="flex-grow container mx-auto px-4">{children}</main>
 }
+
+
